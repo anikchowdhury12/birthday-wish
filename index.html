@@ -208,19 +208,35 @@
 
         /* Happy Birthday লেখাটি ভাঙা রোধ করা */
         #birthdayTitle {
-            font-size: clamp(2rem, 6vw, 4rem); /* স্ক্রিন অনুযায়ী সাইজ অটো অ্যাডজাস্ট হবে */
-            font-weight: 800;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex-wrap: nowrap; /* একলাইনে নিশ্চিত করা */
-            white-space: nowrap; /* লেখা নিচে নামবে না */
-            gap: 2px;
-            margin-bottom: 25px;
+            gap: 3px;
+            margin-bottom: 22px;
             width: 100%;
         }
 
-        #birthdayTitle span {
+        .birthday-title-line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: 0.025em;
+        }
+
+        .birthday-title-greeting {
+            font-size: clamp(1.35rem, 5.2vw, 3.2rem);
+        }
+
+        .birthday-title-name {
+            font-size: clamp(1.7rem, 6.5vw, 4rem);
+        }
+
+        #birthdayTitle .birthday-title-line > span {
             display: inline-block;
             color: #fff;
             text-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080, 0 0 30px #00eaff;
@@ -228,6 +244,40 @@
             animation-delay: var(--delay);
             opacity: 0;
             transform: translateY(50px);
+        }
+
+        .birthday-title-name span {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.9),
+                         0 0 24px rgba(255, 0, 128, 0.65);
+        }
+
+        .birthday-photo {
+            position: relative;
+            width: clamp(160px, 30vw, 230px);
+            aspect-ratio: 4 / 5;
+            padding: 7px;
+            margin: 0 auto 26px;
+            border-radius: 120px 120px 30px 30px;
+            background: linear-gradient(145deg, #ffd700, #ff79c6, #00eaff);
+            box-shadow: 0 0 25px rgba(255, 0, 128, 0.45),
+                        0 0 50px rgba(0, 234, 255, 0.2);
+            animation: photoFloat 4s ease-in-out infinite;
+        }
+
+        .birthday-photo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 35%;
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            border-radius: inherit;
+        }
+
+        @keyframes photoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
         /* Wish Message Box Style */
@@ -299,6 +349,64 @@
             0% { transform: translate(0, 0) scale(1); opacity: 1; }
             100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
         }
+
+        @media (max-width: 600px) {
+            body {
+                min-height: 100vh;
+                min-height: 100svh;
+                align-items: flex-start;
+            }
+
+            #login {
+                width: calc(100% - 32px);
+                max-width: 340px;
+                padding: 32px 22px;
+            }
+
+            #login h2 {
+                font-size: 20px;
+            }
+
+            #birthday {
+                width: 100%;
+                max-width: 520px;
+                padding: 28px 16px 40px;
+                margin: auto;
+            }
+
+            #birthdayTitle {
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+
+            .birthday-title-greeting {
+                font-size: clamp(1.25rem, 6vw, 1.8rem);
+            }
+
+            .birthday-title-name {
+                font-size: clamp(1.65rem, 8vw, 2.4rem);
+            }
+
+            .birthday-photo {
+                width: clamp(150px, 55vw, 210px);
+                margin-bottom: 22px;
+            }
+
+            .wish-card {
+                padding: 22px 18px;
+                border-radius: 18px;
+            }
+
+            .wish-card p {
+                font-size: 1rem;
+                line-height: 1.75;
+                margin-bottom: 12px;
+            }
+
+            #countdownNumber {
+                font-size: clamp(80px, 25vw, 110px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -324,7 +432,11 @@
     <!-- Birthday Main View -->
     <div id="birthday">
         <h1 id="birthdayTitle"></h1>
-        
+
+        <figure class="birthday-photo">
+            <img src="photo/assest.jpg" alt="Farhan Akil-এর ছবি">
+        </figure>
+
         <!-- Birthday Wish Text Message Card -->
         <div class="wish-card">
             <p>🎉 <span class="highlight">শুভ জন্মদিনের অনেক অনেক শুভেচ্ছা ও ভালোবাসা!</span> 🎉</p>
@@ -466,13 +578,25 @@
             const title = document.getElementById("birthdayTitle");
             title.innerHTML = "";
 
-            const text = "HAPPY BIRTHDAY! 🎂";
+            const lines = [
+                { text: "HAPPY BIRTHDAY", className: "birthday-title-greeting" },
+                { text: "FARHAN AKIL", className: "birthday-title-name" }
+            ];
+            let index = 0;
 
-            [...text].forEach((char, index) => {
-                const span = document.createElement("span");
-                span.textContent = char === " " ? "\u00A0" : char;
-                span.style.setProperty("--delay", (index * 0.09) + "s");
-                title.appendChild(span);
+            lines.forEach(({ text, className }) => {
+                const line = document.createElement("span");
+                line.className = `birthday-title-line ${className}`;
+
+                [...text].forEach((char) => {
+                    const letter = document.createElement("span");
+                    letter.textContent = char === " " ? "\u00A0" : char;
+                    letter.style.setProperty("--delay", (index * 0.07) + "s");
+                    line.appendChild(letter);
+                    index++;
+                });
+
+                title.appendChild(line);
             });
         }
 
